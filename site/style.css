@@ -1,12 +1,12 @@
 :root {
-  --bg-color: #fafafa;
-  --surface: #ffffff;
-  --primary: #6200ee;
-  --on-primary: #ffffff;
-  --text-primary: #212121;
-  --text-secondary: #757575;
-  --elevation-low: 0px 1px 3px rgba(0, 0, 0, 0.12);
-  --elevation-medium: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  --bg-color: #101820; /* Dark navy background */
+  --surface: #1c1c1c; /* Deep gray surface */
+  --primary: #f2aa4c; /* Vibrant orange */
+  --on-primary: #ffffff; /* White text on primary */
+  --text-primary: #f2f2f2; /* Bright white text */
+  --text-secondary: #d1d1d1; /* Light gray text */
+  --elevation-low: 0px 1px 3px rgba(0, 0, 0, 0.4);
+  --elevation-medium: 0px 4px 6px rgba(0, 0, 0, 0.6);
   --transition: 0.25s ease;
   --font-family: 'Roboto', sans-serif;
 }
@@ -15,6 +15,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  
 }
 
 body {
@@ -33,6 +34,7 @@ body {
   padding: 1rem;
   background-color: var(--surface);
   box-shadow: var(--elevation-medium);
+  color: var(--text-primary);
   border-radius: 0.5rem;
   margin-bottom: 1rem;
 }
@@ -52,7 +54,8 @@ body {
   padding: 0.5rem 0.75rem;
   border: none;
   border-radius: 0.5rem;
-  background-color: var(--bg-color);
+  background-color: var(--surface);
+  color: var(--text-primary);
   box-shadow: var(--elevation-low);
   font-size: 1rem;
   transition: box-shadow var(--transition);
@@ -72,6 +75,7 @@ body {
 
 .book-card {
   background-color: var(--surface);
+  color: var(--text-primary);
   border-radius: 0.75rem;
   overflow: hidden;
   cursor: pointer;
@@ -116,7 +120,7 @@ body {
   width: 100%;
   height: 100%;
   display: none;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.85); /* Darker overlay */
   align-items: center;
   justify-content: center;
 }
@@ -126,9 +130,16 @@ body {
   border-radius: 0.75rem;
   max-width: 600px;
   width: 90%;
+  max-height: 90vh;
   padding: 2rem;
   box-shadow: var(--elevation-medium);
   position: relative;
+  overflow-y: auto; /* Enable scrolling */
+  scrollbar-width: none; /* Hide scrollbar in Firefox */
+}
+
+.modal__content::-webkit-scrollbar {
+  display: none; /* Hide scrollbar in WebKit browsers */
 }
 
 .modal__close {
@@ -147,8 +158,8 @@ body {
 
 .modal__image {
   display: block;
-  max-width: 90%;
-  max-height: 60vh;
+  max-width: 100%;
+  max-height: 40vh; /* Limit image height */
   width: auto;
   height: auto;
   margin: 0 auto 1rem;
@@ -222,7 +233,7 @@ body {
 }
 
 #reviewForm button:hover {
-  background-color: #3700b3;
+  background-color: #e89a3c; /* Slightly darker orange */
   transform: translateY(-2px);
 }
 

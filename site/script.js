@@ -64,20 +64,20 @@ function openModal(book) {
   const existingReviews = JSON.parse(localStorage.getItem(reviewsKey)) || [];
 
   modalBody.innerHTML = `
-    <img class="modal__image" src="assets/${book.cover}" alt="${book.title}" />
-    <h2>${book.title}</h2>
-    <p><strong>Автор:</strong> ${book.author}</p>
-    <p><strong>Год:</strong> ${book.year}</p>
-    <p>${book.description}</p>
-    <h3>Отзывы</h3>
-    <ul class="review-list" id="reviewList"></ul>
-    <form id="reviewForm">
-      <input type="text" name="name" placeholder="Имя" required />
-      <input type="email" name="email" placeholder="Email" required />
-      <textarea name="comment" rows="3" placeholder="Комментарий" required></textarea>
-      <button type="submit">Отправить</button>
-    </form>
-  `;
+  <img class="modal__image" src="assets/${book.cover}" alt="${book.title}" />
+  <h2>${book.title}</h2>
+  <p><strong>Автор:</strong> ${book.author}</p>
+  <p><strong>Год:</strong> ${book.year}</p>
+  <p>${book.description}</p>
+  <h3>Отзывы</h3>
+  <ul class="review-list" id="reviewList"></ul>
+  <form id="reviewForm">
+    <input type="text" name="name" placeholder="Имя" required />
+    <input type="email" name="email" placeholder="Email" required />
+    <textarea name="comment" rows="3" placeholder="Комментарий" required></textarea>
+    <button type="submit">Отправить</button>
+  </form>
+`;
 
   const reviewList = document.getElementById('reviewList');
   const reviewForm = document.getElementById('reviewForm');
