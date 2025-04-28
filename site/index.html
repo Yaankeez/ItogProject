@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Онлайн-библиотека</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="header">
+    <h1 class="header__title">Онлайн-библиотека</h1>
+    <div class="header__controls">
+      <input type="text" id="searchInput" placeholder="Поиск книги..." />
+      <select id="sortSelect">
+        <option value="">Сортировка</option>
+        <option value="title">По названию</option>
+        <option value="author">По автору</option>
+        <option value="year">По году</option>
+      </select>
+    </div>
+  </header>
+
+  <main>
+    <section id="booksContainer" class="books-grid"></section>
+  </main>
+
+  <!-- Модальное окно -->
+  <div id="modal" class="modal">
+    <div class="modal__content">
+      <span id="modalClose" class="modal__close">&times;</span>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
