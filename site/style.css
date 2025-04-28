@@ -238,6 +238,40 @@ body {
   transform: translateY(-2px);
 }
 
+.slider {
+  position: relative;
+  width: 100%;
+  height: 200px; /* Adjusted height for posters */
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.slider__wrapper {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+  height: 100%;
+  width: 100%; /* Ensure the wrapper takes full width */
+}
+
+.slider__slide {
+  min-width: 100%;
+  height: 100%;
+  position: relative;
+  flex-shrink: 0; /* Prevent shrinking of slides */
+  cursor: pointer;
+}
+
+.slider__slide img {
+  width: 100%;
+  height: 100%; /* Ensure the image fits within the slider height */
+  object-fit: cover; /* Maintain aspect ratio */
+  transition: transform 0.3s ease;
+}
+
+.slider__slide:hover img {
+  transform: scale(1.05);
+}
+
 @media (max-width: 600px) {
   .header {
     flex-direction: column;

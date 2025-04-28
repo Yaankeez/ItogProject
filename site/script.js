@@ -123,3 +123,42 @@ modalClose.addEventListener('click', () => modal.style.display = 'none');
 modal.addEventListener('click', e => {
   if (e.target === modal) modal.style.display = 'none';
 });
+
+const sliderWrapper = document.querySelector('.slider__wrapper');
+let sliderIndex = 0;
+let sliderInterval;
+
+// Инициализация слайдера
+function initSlider() {
+  const featuredBooks = books.slice(0, 5); // Take the first 5 books from JSON
+  featuredBooks.forEach(book => {
+    const slide = document.createElement('div');
+    slide.className = 'slider__slide';
+    slide.innerHTML = `<img src="assets/${book.cover}" alt="${book.title}" />`;
+    slide.addEventListener('click', () => openModal(book));
+    sliderWrapper.append(slide);
+  });
+
+  startSlider();
+}
+
+// Автоперелистывание слайдера
+function startSlider() {
+  sliderInterval = setInterval(() => {
+    sliderIndex = (sliderIndex + 1) % sliderWrapper.children.length;
+    sliderWrapper.style.transform = `translateX(-${sliderIndex * 100}%)`;
+  }, 5000);
+}
+
+// Остановка слайдера при наведении
+sliderWrapper.addEventListener('mouseover', () => clearInterval(sliderInterval));
+sliderWrapper.addEventListener('mouseout', startSlider);
+
+// Запуск слайдера после загрузки книг
+fetch('books.json')
+  .then(res => res.json())
+  .then(data => {
+    books = data;
+    renderBooks(books);
+    initSlider(); // Инициализация слайдера
+  });
