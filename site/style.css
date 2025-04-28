@@ -55,7 +55,7 @@ body {
   border: none;
   border-radius: 0.5rem;
   background-color: var(--surface);
-  color: var(--text-primary);
+  color: var(--text-primary); /* Match text color with the rest of the site */
   box-shadow: var(--elevation-low);
   font-size: 1rem;
   transition: box-shadow var(--transition);
@@ -210,6 +210,7 @@ body {
   border: none;
   border-radius: 0.5rem;
   background-color: var(--bg-color);
+  color: var(--text-primary); /* Match text color with the rest of the site */
   box-shadow: var(--elevation-low);
   font-size: 1rem;
   transition: box-shadow var(--transition);
