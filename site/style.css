@@ -37,9 +37,22 @@ body {
   margin-bottom: 1rem;
 }
 
+.header__brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header__logo {
+  width: 60px; /* Уменьшенный размер логотипа */
+  height: auto;
+  object-fit: contain;
+}
+
 .header__title {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .header__controls {
