@@ -4,77 +4,77 @@ const sortSelect = document.getElementById('sortSelect');
 const modal = document.getElementById('modal');
 const modalBody = document.getElementById('modalBody');
 const modalClose = document.getElementById('modalClose');
-const sliderWrapper = document.querySelector('.slider__wrapper');
-const slider = document.querySelector('.slider');
+const carouselTrack = document.querySelector('.carousel-track');
+
 let books = [];
-let sliderIndex = 0;
-let sliderInterval;
+let currentPosition = 0;
+let autoScrollInterval;
 
-// Инициализация стрелок
-const prevArrow = createArrow('prev');
-const nextArrow = createArrow('next');
-slider.append(prevArrow, nextArrow);
-
-function createArrow(direction) {
-  const arrow = document.createElement('button');
-  arrow.className = `slider-arrow slider-arrow--${direction}`;
-  arrow.innerHTML = `
-    <svg viewBox="0 0 24 24">
-      ${direction === 'prev' ? 
-        '<path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/>' : 
-        '<path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>'}
-    </svg>
-  `;
-  arrow.addEventListener('click', () => handleArrowClick(direction));
-  return arrow;
-}
-
-function handleArrowClick(direction) {
-  clearInterval(sliderInterval);
-  if (direction === 'prev') {
-    sliderIndex = sliderIndex > 0 ? sliderIndex - 1 : sliderWrapper.children.length - 1;
-  } else {
-    sliderIndex = (sliderIndex + 1) % sliderWrapper.children.length;
-  }
-  updateSlider();
-  startSlider();
-}
-
-function initSlider() {
-  const featuredBooks = books.slice(0, 5);
-  sliderWrapper.innerHTML = '';
+// Инициализация карусели
+function initCarousel() {
+  carouselTrack.innerHTML = '';
   
-  featuredBooks.forEach(book => {
-    const slide = document.createElement('div');
-    slide.className = 'slider__slide';
-    slide.innerHTML = `
-      <img src="assets/${book.cover}" alt="${book.title}" />
-      <div class="slide-caption">
-        <h3>${book.title}</h3>
-        <p>${book.author} · ${book.year}</p>
+  books.forEach(book => {
+    const item = document.createElement('div');
+    item.className = 'carousel-item';
+    item.innerHTML = `
+      <div class="book-card">
+        <img src="assets/${book.cover}" alt="${book.title}" />
+        <div class="card-body">
+          <h3>${book.title}</h3>
+          <p>${book.author}</p>
+        </div>
       </div>
     `;
-    slide.addEventListener('click', () => openModal(book));
-    sliderWrapper.appendChild(slide);
+    item.addEventListener('click', () => openModal(book));
+    carouselTrack.appendChild(item);
   });
 
-  startSlider();
+  startAutoScroll();
 }
 
-function startSlider() {
-  clearInterval(sliderInterval);
-  sliderInterval = setInterval(() => {
-    sliderIndex = (sliderIndex + 1) % sliderWrapper.children.length;
-    updateSlider();
+function moveCarousel(direction) {
+  const itemWidth = document.querySelector('.carousel-item').offsetWidth + 16;
+  const visibleItems = Math.floor(carouselTrack.offsetWidth / itemWidth);
+  const maxPosition = carouselTrack.scrollWidth - carouselTrack.offsetWidth;
+
+  currentPosition = direction === 'next' 
+    ? Math.min(currentPosition + (itemWidth * visibleItems), maxPosition)
+    : Math.max(currentPosition - (itemWidth * visibleItems), 0);
+
+  carouselTrack.style.transform = `translateX(-${currentPosition}px)`;
+}
+
+function startAutoScroll() {
+  autoScrollInterval = setInterval(() => {
+    const itemWidth = document.querySelector('.carousel-item').offsetWidth + 16;
+    const maxPosition = carouselTrack.scrollWidth - carouselTrack.offsetWidth;
+    
+    if (currentPosition >= maxPosition) {
+      currentPosition = 0;
+    } else {
+      currentPosition += itemWidth * 2;
+    }
+    
+    carouselTrack.style.transform = `translateX(-${currentPosition}px)`;
   }, 5000);
 }
 
-function updateSlider() {
-  sliderWrapper.style.transform = `translateX(-${sliderIndex * 100}%)`;
-}
+// Обработчики событий
+document.querySelector('.carousel-btn.prev').addEventListener('click', () => {
+  clearInterval(autoScrollInterval);
+  moveCarousel('prev');
+  startAutoScroll();
+});
 
-sliderWrapper.addEventListener('mouseover', () => clearInterval(sliderInterval));
-sliderWrapper.addEventListener('mouseout', startSlider);
+document.querySelector('.carousel-btn.next').addEventListener('click', () => {
+  clearInterval(autoScrollInterval);
+  moveCarousel('next');
+  startAutoScroll();
+});
+
+carouselTrack.addEventListener('mouseenter', () => clearInterval(autoScrollInterval));
+carouselTrack.addEventListener('mouseleave', startAutoScroll);
 
 // Загрузка данных
 fetch('books.json')
@@ -85,7 +85,7 @@ fetch('books.json')
   .then(data => {
     books = data;
     renderBooks(books);
-    initSlider();
+    initCarousel();
   })
   .catch(err => {
     booksContainer.innerHTML = '<p>Не удалось загрузить данные.</p>';
