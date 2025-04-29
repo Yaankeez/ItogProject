@@ -132,52 +132,82 @@ function openModal(book) {
   modalBody.innerHTML = `
     <img class="modal__image" src="assets/${book.cover}" alt="${book.title}" />
     <h2>${book.title}</h2>
-    <p><strong>Автор:</strong> ${book.author}</p>
-    <p><strong>Год:</strong> ${book.year}</p>
-    <p>${book.description}</p>
-    <h3>Отзывы</h3>
-    <ul class="review-list" id="reviewList"></ul>
+    <div class="book-info">
+      <p><strong>Автор:</strong> ${book.author}</p>
+      <p><strong>Год издания:</strong> ${book.year}</p>
+    </div>
+    <p class="book-description">${book.description}</p>
+    
+    <div class="reviews-section">
+      <h3>Отзывы ${existingReviews.length ? `(${existingReviews.length})` : ''}</h3>
+      ${existingReviews.length ? 
+        '<ul class="review-list" id="reviewList"></ul>' : 
+        '<p class="no-reviews">Пока нет отзывов. Будьте первым!</p>'}
+    </div>
+
     <form id="reviewForm">
-      <input type="text" name="name" placeholder="Имя" required />
-      <input type="email" name="email" placeholder="Email" required />
-      <textarea name="comment" rows="3" placeholder="Комментарий" required></textarea>
-      <button type="submit">Отправить</button>
+      <div class="form-row">
+        <input type="text" name="name" placeholder="Ваше имя" required />
+        <input type="email" name="email" placeholder="Ваш email" required />
+      </div>
+      <textarea 
+        name="comment" 
+        rows="4" 
+        placeholder="Ваш отзыв..." 
+        required
+      ></textarea>
+      <button type="submit">Опубликовать отзыв</button>
     </form>
   `;
 
-  const reviewList = document.getElementById('reviewList');
-  const reviewForm = document.getElementById('reviewForm');
-
-  function renderReviews() {
-    reviewList.innerHTML = '';
-    existingReviews.forEach(r => {
-      const li = document.createElement('li');
-      li.className = 'review-item';
-      const date = new Date(r.date).toLocaleString('ru-RU');
-      li.innerHTML = `
-        <header>${r.name}<span>${date}</span></header>
-        <p>${r.comment}</p>
-      `;
-      reviewList.append(li);
-    });
+  if(existingReviews.length) {
+    const reviewList = document.getElementById('reviewList');
+    
+    function renderReviews() {
+      reviewList.innerHTML = '';
+      existingReviews.forEach(r => {
+        const li = document.createElement('li');
+        li.className = 'review-item';
+        const date = new Date(r.date).toLocaleString('ru-RU', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        li.innerHTML = `
+          <header>
+            <span>${r.name}</span>
+            <span>${date}</span>
+          </header>
+          <p>${r.comment}</p>
+        `;
+        reviewList.append(li);
+      });
+    }
+    
+    renderReviews();
   }
 
-  renderReviews();
-
-  reviewForm.addEventListener('submit', e => {
-    e.preventDefault();
-    const formData = new FormData(reviewForm);
-    const review = {
-      name: formData.get('name'),
-      email: formData.get('email'),
-      comment: formData.get('comment'),
-      date: new Date().toISOString()
-    };
-    existingReviews.push(review);
-    localStorage.setItem(reviewsKey, JSON.stringify(existingReviews));
-    renderReviews();
-    reviewForm.reset();
-  });
+  const reviewForm = document.getElementById('reviewForm');
+  if(reviewForm) {
+    reviewForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const formData = new FormData(reviewForm);
+      const review = {
+        name: formData.get('name').trim(),
+        email: formData.get('email').trim(),
+        comment: formData.get('comment').trim(),
+        date: new Date().toISOString()
+      };
+      
+      if(!review.name || !review.email || !review.comment) return;
+      
+      existingReviews.push(review);
+      localStorage.setItem(reviewsKey, JSON.stringify(existingReviews));
+      openModal(book); // Перезагружаем модальное окно
+    });
+  }
 
   modal.style.display = 'flex';
 }

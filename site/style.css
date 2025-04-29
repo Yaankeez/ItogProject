@@ -207,6 +207,91 @@ body {
   color: var(--text-primary);
 }
 
+.modal__image {
+  display: block;
+  max-width: 100%;
+  max-height: 50vh;
+  width: auto;
+  height: auto;
+  margin: 0 auto 1.5rem;
+  border-radius: 0.5rem;
+  object-fit: contain;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.review-list {
+  margin: 1.5rem 0;
+  padding: 0;
+  list-style: none;
+  max-height: 200px;
+  overflow-y: auto;
+  background: var(--bg-color);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+
+.review-item {
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  background: rgba(255,255,255,0.05);
+  border-radius: 0.5rem;
+  transition: background 0.3s ease;
+}
+
+.review-item:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+.review-item header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.review-item header span {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  opacity: 0.8;
+}
+
+#reviewForm {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+#reviewForm input,
+#reviewForm textarea {
+  padding: 0.75rem;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 0.5rem;
+  background: var(--bg-color);
+  color: var(--text-primary);
+  font-family: inherit;
+}
+
+#reviewForm button {
+  padding: 0.75rem;
+  background: var(--primary);
+  color: var(--on-primary);
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+#reviewForm button:hover {
+  transform: translateY(-2px);
+}
+
+.no-reviews {
+  text-align: center;
+  padding: 1rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
 @media (max-width: 1200px) {
   .carousel-item {
     flex: 0 0 calc(25% - 16px);
