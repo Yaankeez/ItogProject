@@ -1,10 +1,10 @@
 :root {
-  --bg-color: #101820; /* Dark navy background */
-  --surface: #1c1c1c; /* Deep gray surface */
-  --primary: #f2aa4c; /* Vibrant orange */
-  --on-primary: #ffffff; /* White text on primary */
-  --text-primary: #f2f2f2; /* Bright white text */
-  --text-secondary: #d1d1d1; /* Light gray text */
+  --bg-color: #101820;
+  --surface: #1c1c1c;
+  --primary: #f2aa4c;
+  --on-primary: #ffffff;
+  --text-primary: #f2f2f2;
+  --text-secondary: #d1d1d1;
   --elevation-low: 0px 1px 3px rgba(0, 0, 0, 0.4);
   --elevation-medium: 0px 4px 6px rgba(0, 0, 0, 0.6);
   --transition: 0.25s ease;
@@ -15,7 +15,6 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  
 }
 
 body {
@@ -34,7 +33,6 @@ body {
   padding: 1rem;
   background-color: var(--surface);
   box-shadow: var(--elevation-medium);
-  color: var(--text-primary);
   border-radius: 0.5rem;
   margin-bottom: 1rem;
 }
@@ -55,7 +53,7 @@ body {
   border: none;
   border-radius: 0.5rem;
   background-color: var(--surface);
-  color: var(--text-primary); /* Match text color with the rest of the site */
+  color: var(--text-primary);
   box-shadow: var(--elevation-low);
   font-size: 1rem;
   transition: box-shadow var(--transition);
@@ -65,6 +63,106 @@ body {
 .header select:focus {
   outline: none;
   box-shadow: var(--elevation-medium);
+}
+
+.slider {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  border-radius: 0.75rem;
+  box-shadow: var(--elevation-medium);
+}
+
+.slider__wrapper {
+  display: flex;
+  height: 100%;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.slider__slide {
+  min-width: 100%;
+  height: 100%;
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+}
+
+.slider__slide img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  transition: transform 0.3s ease;
+}
+
+.slider__slide:hover img {
+  transform: scale(1.02);
+}
+
+.slider-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  z-index: 10;
+}
+
+.slider-arrow:hover {
+  background: var(--primary);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.slider-arrow--prev {
+  left: 1.5rem;
+}
+
+.slider-arrow--next {
+  right: 1.5rem;
+}
+
+.slider-arrow svg {
+  width: 24px;
+  height: 24px;
+  fill: var(--text-primary);
+}
+
+.slide-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  padding: 1.5rem;
+  color: white;
+}
+
+.slide-caption h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.slide-caption p {
+  font-size: 1rem;
+  opacity: 0.9;
 }
 
 .books-grid {
@@ -104,7 +202,6 @@ body {
 .card-body h3 {
   font-size: 1.25rem;
   margin-bottom: 0.5rem;
-  color: var(--text-primary);
 }
 
 .card-body p {
@@ -112,7 +209,6 @@ body {
   color: var(--text-secondary);
 }
 
-/* Модальное окно */
 .modal {
   position: fixed;
   top: 0;
@@ -120,9 +216,10 @@ body {
   width: 100%;
   height: 100%;
   display: none;
-  background: rgba(0, 0, 0, 0.85); /* Darker overlay */
+  background: rgba(0, 0, 0, 0.85);
   align-items: center;
   justify-content: center;
+  z-index: 1000;
 }
 
 .modal__content {
@@ -134,12 +231,12 @@ body {
   padding: 2rem;
   box-shadow: var(--elevation-medium);
   position: relative;
-  overflow-y: auto; /* Enable scrolling */
-  scrollbar-width: none; /* Hide scrollbar in Firefox */
+  overflow-y: auto;
+  scrollbar-width: none;
 }
 
 .modal__content::-webkit-scrollbar {
-  display: none; /* Hide scrollbar in WebKit browsers */
+  display: none;
 }
 
 .modal__close {
@@ -159,7 +256,7 @@ body {
 .modal__image {
   display: block;
   max-width: 100%;
-  max-height: 40vh; /* Limit image height */
+  max-height: 40vh;
   width: auto;
   height: auto;
   margin: 0 auto 1rem;
@@ -176,7 +273,7 @@ body {
 }
 
 .review-item {
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
   padding: 0.75rem 0;
 }
 
@@ -210,7 +307,7 @@ body {
   border: none;
   border-radius: 0.5rem;
   background-color: var(--bg-color);
-  color: var(--text-primary); /* Match text color with the rest of the site */
+  color: var(--text-primary);
   box-shadow: var(--elevation-low);
   font-size: 1rem;
   transition: box-shadow var(--transition);
@@ -234,47 +331,34 @@ body {
 }
 
 #reviewForm button:hover {
-  background-color: #e89a3c; /* Slightly darker orange */
+  background-color: #e89a3c;
   transform: translateY(-2px);
-}
-
-.slider {
-  position: relative;
-  width: 100%;
-  height: 200px; /* Adjusted height for posters */
-  overflow: hidden;
-  margin-bottom: 1rem;
-}
-
-.slider__wrapper {
-  display: flex;
-  transition: transform 0.5s ease-in-out;
-  height: 100%;
-  width: 100%; /* Ensure the wrapper takes full width */
-}
-
-.slider__slide {
-  min-width: 100%;
-  height: 100%;
-  position: relative;
-  flex-shrink: 0; /* Prevent shrinking of slides */
-  cursor: pointer;
-}
-
-.slider__slide img {
-  width: 100%;
-  height: 100%; /* Ensure the image fits within the slider height */
-  object-fit: cover; /* Maintain aspect ratio */
-  transition: transform 0.3s ease;
-}
-
-.slider__slide:hover img {
-  transform: scale(1.05);
 }
 
 @media (max-width: 600px) {
   .header {
     flex-direction: column;
     gap: 1rem;
+  }
+  
+  .slider {
+    height: 250px;
+  }
+  
+  .slide-caption {
+    padding: 1rem;
+  }
+  
+  .slide-caption h3 {
+    font-size: 1.2rem;
+  }
+  
+  .slide-caption p {
+    font-size: 0.9rem;
+  }
+  
+  .slider-arrow {
+    width: 32px;
+    height: 32px;
   }
 }

@@ -4,7 +4,77 @@ const sortSelect = document.getElementById('sortSelect');
 const modal = document.getElementById('modal');
 const modalBody = document.getElementById('modalBody');
 const modalClose = document.getElementById('modalClose');
+const sliderWrapper = document.querySelector('.slider__wrapper');
+const slider = document.querySelector('.slider');
 let books = [];
+let sliderIndex = 0;
+let sliderInterval;
+
+// Инициализация стрелок
+const prevArrow = createArrow('prev');
+const nextArrow = createArrow('next');
+slider.append(prevArrow, nextArrow);
+
+function createArrow(direction) {
+  const arrow = document.createElement('button');
+  arrow.className = `slider-arrow slider-arrow--${direction}`;
+  arrow.innerHTML = `
+    <svg viewBox="0 0 24 24">
+      ${direction === 'prev' ? 
+        '<path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/>' : 
+        '<path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>'}
+    </svg>
+  `;
+  arrow.addEventListener('click', () => handleArrowClick(direction));
+  return arrow;
+}
+
+function handleArrowClick(direction) {
+  clearInterval(sliderInterval);
+  if (direction === 'prev') {
+    sliderIndex = sliderIndex > 0 ? sliderIndex - 1 : sliderWrapper.children.length - 1;
+  } else {
+    sliderIndex = (sliderIndex + 1) % sliderWrapper.children.length;
+  }
+  updateSlider();
+  startSlider();
+}
+
+function initSlider() {
+  const featuredBooks = books.slice(0, 5);
+  sliderWrapper.innerHTML = '';
+  
+  featuredBooks.forEach(book => {
+    const slide = document.createElement('div');
+    slide.className = 'slider__slide';
+    slide.innerHTML = `
+      <img src="assets/${book.cover}" alt="${book.title}" />
+      <div class="slide-caption">
+        <h3>${book.title}</h3>
+        <p>${book.author} · ${book.year}</p>
+      </div>
+    `;
+    slide.addEventListener('click', () => openModal(book));
+    sliderWrapper.appendChild(slide);
+  });
+
+  startSlider();
+}
+
+function startSlider() {
+  clearInterval(sliderInterval);
+  sliderInterval = setInterval(() => {
+    sliderIndex = (sliderIndex + 1) % sliderWrapper.children.length;
+    updateSlider();
+  }, 5000);
+}
+
+function updateSlider() {
+  sliderWrapper.style.transform = `translateX(-${sliderIndex * 100}%)`;
+}
+
+sliderWrapper.addEventListener('mouseover', () => clearInterval(sliderInterval));
+sliderWrapper.addEventListener('mouseout', startSlider);
 
 // Загрузка данных
 fetch('books.json')
@@ -15,13 +85,13 @@ fetch('books.json')
   .then(data => {
     books = data;
     renderBooks(books);
+    initSlider();
   })
   .catch(err => {
     booksContainer.innerHTML = '<p>Не удалось загрузить данные.</p>';
     console.error(err);
   });
 
-// Рендер карточек
 function renderBooks(list) {
   booksContainer.innerHTML = '';
   list.forEach(book => {
@@ -39,7 +109,6 @@ function renderBooks(list) {
   });
 }
 
-// Поиск
 searchInput.addEventListener('input', () => {
   const term = searchInput.value.toLowerCase();
   const filtered = books.filter(b => 
@@ -49,7 +118,6 @@ searchInput.addEventListener('input', () => {
   renderBooks(filtered);
 });
 
-// Сортировка
 sortSelect.addEventListener('change', () => {
   const key = sortSelect.value;
   if (!key) return renderBooks(books);
@@ -57,32 +125,29 @@ sortSelect.addEventListener('change', () => {
   renderBooks(sorted);
 });
 
-// Открыть модалку с деталями
 function openModal(book) {
-  // Получаем существующие отзывы
   const reviewsKey = `reviews_${book.id}`;
   const existingReviews = JSON.parse(localStorage.getItem(reviewsKey)) || [];
 
   modalBody.innerHTML = `
-  <img class="modal__image" src="assets/${book.cover}" alt="${book.title}" />
-  <h2>${book.title}</h2>
-  <p><strong>Автор:</strong> ${book.author}</p>
-  <p><strong>Год:</strong> ${book.year}</p>
-  <p>${book.description}</p>
-  <h3>Отзывы</h3>
-  <ul class="review-list" id="reviewList"></ul>
-  <form id="reviewForm">
-    <input type="text" name="name" placeholder="Имя" required />
-    <input type="email" name="email" placeholder="Email" required />
-    <textarea name="comment" rows="3" placeholder="Комментарий" required></textarea>
-    <button type="submit">Отправить</button>
-  </form>
-`;
+    <img class="modal__image" src="assets/${book.cover}" alt="${book.title}" />
+    <h2>${book.title}</h2>
+    <p><strong>Автор:</strong> ${book.author}</p>
+    <p><strong>Год:</strong> ${book.year}</p>
+    <p>${book.description}</p>
+    <h3>Отзывы</h3>
+    <ul class="review-list" id="reviewList"></ul>
+    <form id="reviewForm">
+      <input type="text" name="name" placeholder="Имя" required />
+      <input type="email" name="email" placeholder="Email" required />
+      <textarea name="comment" rows="3" placeholder="Комментарий" required></textarea>
+      <button type="submit">Отправить</button>
+    </form>
+  `;
 
   const reviewList = document.getElementById('reviewList');
   const reviewForm = document.getElementById('reviewForm');
 
-  // Функция рендеринга отзывов
   function renderReviews() {
     reviewList.innerHTML = '';
     existingReviews.forEach(r => {
@@ -99,7 +164,6 @@ function openModal(book) {
 
   renderReviews();
 
-  // Обработка отправки
   reviewForm.addEventListener('submit', e => {
     e.preventDefault();
     const formData = new FormData(reviewForm);
@@ -118,47 +182,7 @@ function openModal(book) {
   modal.style.display = 'flex';
 }
 
-// Закрыть модалку
 modalClose.addEventListener('click', () => modal.style.display = 'none');
 modal.addEventListener('click', e => {
   if (e.target === modal) modal.style.display = 'none';
 });
-
-const sliderWrapper = document.querySelector('.slider__wrapper');
-let sliderIndex = 0;
-let sliderInterval;
-
-// Инициализация слайдера
-function initSlider() {
-  const featuredBooks = books.slice(0, 5); // Take the first 5 books from JSON
-  featuredBooks.forEach(book => {
-    const slide = document.createElement('div');
-    slide.className = 'slider__slide';
-    slide.innerHTML = `<img src="assets/${book.cover}" alt="${book.title}" />`;
-    slide.addEventListener('click', () => openModal(book));
-    sliderWrapper.append(slide);
-  });
-
-  startSlider();
-}
-
-// Автоперелистывание слайдера
-function startSlider() {
-  sliderInterval = setInterval(() => {
-    sliderIndex = (sliderIndex + 1) % sliderWrapper.children.length;
-    sliderWrapper.style.transform = `translateX(-${sliderIndex * 100}%)`;
-  }, 5000);
-}
-
-// Остановка слайдера при наведении
-sliderWrapper.addEventListener('mouseover', () => clearInterval(sliderInterval));
-sliderWrapper.addEventListener('mouseout', startSlider);
-
-// Запуск слайдера после загрузки книг
-fetch('books.json')
-  .then(res => res.json())
-  .then(data => {
-    books = data;
-    renderBooks(books);
-    initSlider(); // Инициализация слайдера
-  });
