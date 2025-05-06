@@ -191,6 +191,12 @@ body {
   box-shadow: var(--elevation-medium);
   position: relative;
   overflow-y: auto;
+  scrollbar-width: none; /* Для Firefox */
+  -ms-overflow-style: none; /* Для IE и Edge */
+}
+
+.modal__content::-webkit-scrollbar {
+  display: none; /* Для Chrome, Safari и Opera */
 }
 
 .modal__close {

@@ -5,18 +5,29 @@ const modal = document.getElementById('modal');
 const modalBody = document.getElementById('modalBody');
 const modalClose = document.getElementById('modalClose');
 const carouselTrack = document.querySelector('.carousel-track');
+const prevBtn = document.querySelector('.carousel-btn.prev');
+const nextBtn = document.querySelector('.carousel-btn.next');
 
 let books = [];
 let currentPosition = 0;
 let autoScrollInterval;
+let itemWidth;
+let isDragging = false;
+let startPos = 0;
+let currentTranslate = 0;
+let prevTranslate = 0;
 
 // Инициализация карусели
 function initCarousel() {
   carouselTrack.innerHTML = '';
   
-  books.forEach(book => {
+  // Создаем копии элементов для бесконечной прокрутки
+  const duplicatedBooks = [...books, ...books, ...books];
+  
+  duplicatedBooks.forEach((book, index) => {
     const item = document.createElement('div');
     item.className = 'carousel-item';
+    item.setAttribute('data-index', index);
     item.innerHTML = `
       <div class="book-card">
         <img src="assets/${book.cover}" alt="${book.title}" />
@@ -26,53 +37,121 @@ function initCarousel() {
         </div>
       </div>
     `;
-    item.addEventListener('click', () => openModal(book));
+    item.addEventListener('click', (e) => {
+      // Проверяем, был ли это клик после перетаскивания
+      if (!isDragging) {
+        openModal(book);
+      }
+    });
+    
+    // Добавляем обработчики для touch-событий
+    item.addEventListener('touchstart', touchStart(index));
+    item.addEventListener('touchend', touchEnd);
+    item.addEventListener('touchmove', touchMove);
+    
     carouselTrack.appendChild(item);
   });
+
+  // Вычисляем ширину одного элемента
+  itemWidth = document.querySelector('.carousel-item').offsetWidth + 16;
+  
+  // Устанавливаем начальную позицию в середине дублированных элементов
+  currentPosition = books.length * itemWidth;
+  currentTranslate = currentPosition;
+  prevTranslate = currentPosition;
+  carouselTrack.style.transform = `translateX(-${currentPosition}px)`;
 
   startAutoScroll();
 }
 
+// Touch event handlers
+function touchStart(index) {
+  return function(event) {
+    startPos = getPositionX(event);
+    isDragging = true;
+    clearInterval(autoScrollInterval);
+    carouselTrack.style.transition = 'none';
+  };
+}
+
+function touchEnd() {
+  isDragging = false;
+  const movedBy = currentTranslate - prevTranslate;
+
+  if (movedBy < -100) {
+    moveCarousel('next');
+  } else if (movedBy > 100) {
+    moveCarousel('prev');
+  } else {
+    carouselTrack.style.transform = `translateX(-${currentPosition}px)`;
+  }
+  
+  startAutoScroll();
+}
+
+function touchMove(event) {
+  if (isDragging) {
+    const currentPositionX = getPositionX(event);
+    currentTranslate = prevTranslate + (currentPositionX - startPos);
+    carouselTrack.style.transform = `translateX(-${currentTranslate}px)`;
+  }
+}
+
+function getPositionX(event) {
+  return event.type.includes('mouse') ? event.pageX : event.touches[0].clientX;
+}
+
 function moveCarousel(direction) {
-  const itemWidth = document.querySelector('.carousel-item').offsetWidth + 16;
-  const visibleItems = Math.floor(carouselTrack.offsetWidth / itemWidth);
-  const maxPosition = carouselTrack.scrollWidth - carouselTrack.offsetWidth;
-
-  currentPosition = direction === 'next' 
-    ? Math.min(currentPosition + (itemWidth * visibleItems), maxPosition)
-    : Math.max(currentPosition - (itemWidth * visibleItems), 0);
-
+  const itemsCount = books.length;
+  
+  if (direction === 'next') {
+    currentPosition += itemWidth;
+  } else {
+    currentPosition -= itemWidth;
+  }
+  
+  carouselTrack.style.transition = 'transform 0.5s ease';
   carouselTrack.style.transform = `translateX(-${currentPosition}px)`;
+  prevTranslate = currentPosition;
+  
+  // Проверяем, достигли ли мы конца/начала и переключаемся незаметно
+  carouselTrack.addEventListener('transitionend', function handler() {
+    if (direction === 'next' && currentPosition >= (2 * books.length * itemWidth)) {
+      carouselTrack.style.transition = 'none';
+      currentPosition = books.length * itemWidth;
+      carouselTrack.style.transform = `translateX(-${currentPosition}px)`;
+      prevTranslate = currentPosition;
+    } else if (direction === 'prev' && currentPosition <= 0) {
+      carouselTrack.style.transition = 'none';
+      currentPosition = books.length * itemWidth;
+      carouselTrack.style.transform = `translateX(-${currentPosition}px)`;
+      prevTranslate = currentPosition;
+    }
+    carouselTrack.removeEventListener('transitionend', handler);
+  });
 }
 
 function startAutoScroll() {
+  clearInterval(autoScrollInterval);
   autoScrollInterval = setInterval(() => {
-    const itemWidth = document.querySelector('.carousel-item').offsetWidth + 16;
-    const maxPosition = carouselTrack.scrollWidth - carouselTrack.offsetWidth;
-    
-    if (currentPosition >= maxPosition) {
-      currentPosition = 0;
-    } else {
-      currentPosition += itemWidth * 2;
-    }
-    
-    carouselTrack.style.transform = `translateX(-${currentPosition}px)`;
+    moveCarousel('next');
   }, 5000);
 }
 
-// Обработчики событий
-document.querySelector('.carousel-btn.prev').addEventListener('click', () => {
+// Обработчики событий для кнопок
+prevBtn.addEventListener('click', () => {
   clearInterval(autoScrollInterval);
   moveCarousel('prev');
   startAutoScroll();
 });
 
-document.querySelector('.carousel-btn.next').addEventListener('click', () => {
+nextBtn.addEventListener('click', () => {
   clearInterval(autoScrollInterval);
   moveCarousel('next');
   startAutoScroll();
 });
 
+// Обработчики событий для мыши
 carouselTrack.addEventListener('mouseenter', () => clearInterval(autoScrollInterval));
 carouselTrack.addEventListener('mouseleave', startAutoScroll);
 
@@ -205,7 +284,7 @@ function openModal(book) {
       
       existingReviews.push(review);
       localStorage.setItem(reviewsKey, JSON.stringify(existingReviews));
-      openModal(book); // Перезагружаем модальное окно
+      openModal(book);
     });
   }
 
